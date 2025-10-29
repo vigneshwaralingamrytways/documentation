@@ -1,0 +1,137 @@
+﻿
+Employee Management – My Documentation
+Project Summary
+I built a small Spring Boot application to manage employee records.It has CRUD APIs, validation, logging, exception handling, and Swagger docs.
+
+
+
+Dependencies I Added
+    • spring-boot-starter-web → to create REST APIs (@RestController, mappings, etc.)
+    • spring-boot-starter-data-jpa → for database access using JpaRepository
+    • spring-boot-starter-validation → to check inputs with @Valid, @NotBlank, etc.
+    • lombok → to reduce boilerplate (getters, setters, loggers)
+    • springdoc-openapi-ui → for Swagger documentation
+    • mysql-connector-java → database
+
+Annotations – What They Do
+    • @RestController – marks the class to handle web requests and return JSON.
+    • @Autowired – Spring injects required dependencies .
+    • @Entity – tells JPA this class maps to a table.
+    • @Id + @GeneratedValue – defines the primary key and auto-generates it.
+    • @GetMapping, @PostMapping, @PutMapping, @PatchMapping, @DeleteMapping – map HTTP methods to Java methods.
+    • @RequestBody – binds JSON body to a Java object.
+    • @PathVariable, @RequestParam – read URL path and query parameters.
+    • @Valid, @Validated – enable validation before saving data.
+    • @NotBlank, @Min, @Null, @NotNull – field-level rules in entity.
+    • @Service, @Repository – mark the business and data layers.
+    • @ControllerAdvice + @ExceptionHandler – catch exceptions globally.
+    • @Slf4j – auto-creates log for logging.
+    • @Hidden  - hide the controler from the api documentaion inswagger
+    • @Tag(name="emp", description="about emp data") – describes this controller in Swagger UI.
+
+API List and What Happens
+Method
+Endpoint
+What It Does
+Input
+Output
+GET
+/getemployee
+Fetch all employees
+none
+JSON list
+GET
+/{id}
+Fetch employee by id
+path id
+JSON or error
+POST
+/create
+Create new employee
+JSON body
+status only
+PUT
+/{id}
+Update all fields
+
+id + JSON
+updated record
+PATCH
+/{id}
+Update only name
+id + name param
+status only
+DELETE
+/{id}
+Delete one record
+id
+status
+DELETE
+/deleteall
+Delete all records
+none
+status
+GET
+/get/{id}
+Return formatted details string
+id
+text
+GET
+/welcome
+Simple message
+none
+“welcome to rytways”
+GET
+/sal
+Test exception (divide by zero)
+none
+handled error
+Flow:
+Client sends request (e.g., /create with JSON body).
+    • Controller receives request → validates input.
+    • Service performs logic (create, fetch, update, delete).
+    • Repository communicates with database.
+    • Response is returned as JSON.
+    • If error → handled by Globalhandler → sends custom error response.
+
+      
+
+
+Exception Handling
+Handled globally with @ControllerAdvice:
+    • EmployeeNotFoundException: when ID is not found in DB.
+    • ArithmeticException: used for test endpoint.
+    • Generic Exception: fallback for anything else
+
+Used @ControllerAdvice and @ExceptionHandler to return a clean JSON message instead of a full stack trace.
+      {
+        "statuscode": 404,
+        "data": "Employee not found with this id: 1",
+        "error": "employee not found at curent time and date"
+      }
+
+Validation
+Done with Jakarta validation on EmployeeEntity.
+    • @NotBlank for name
+    • @Min(10000) for salary
+    • @Min(0) for experience
+    • @Null or @NotNull for Emp_id depending on create/update
+Controller methods use @Valid to trigger checks before saving.
+If validation fails, Spring automatically returns 400 Bad Request.
+
+Logging
+Used @Slf4j (from Lombok).
+Examples:
+log.info("getting all employees");
+log.warn("deleting employee by id");
+log.error("demo error");
+Helps trace what’s happening without using print statements.
+
+Swagger
+Added @Tag on the controller for better grouping.
+After running the app, Swagger UI opens at:
+http://localhost:8080/swagger-ui/index.html
+Shows all endpoints with input/output formats.
+
+
+
